@@ -24,7 +24,7 @@ var dbContext = scope.ServiceProvider.GetService<MyBoardsContext>();
 var pendingMigrations = dbContext.Database.GetPendingMigrations();
 if (pendingMigrations.Any())
 {
-    dbContext.Database.Migrate();
+    //dbContext.Database.Migrate();
 }
 
 var users = dbContext.Users.ToList();
@@ -60,13 +60,30 @@ if(!users.Any())
 
 app.MapGet("data", async (MyBoardsContext db) =>
 {
-    var statesCount = await db.WorkItems
-        .GroupBy(x => x.StateId)
-        .Select(g => new { stateId = g.Key, count = g.Count() })
+    var workItemState = await db.WorkItemStates
+        .Where(x => x.Value == "On Hold")
+        .FirstOrDefaultAsync();
+
+    var statesCount = await db.Epics
+        .Where(x => x.State == workItemState)
+        .OrderBy(g => g.Priority)
         .ToListAsync();
 
-
     return statesCount;
+});
+
+app.MapGet("user", async (MyBoardsContext db) =>
+{
+    var user = await db.Users
+        .OrderByDescending(x => x.Comments.Count)
+        .Take(1)
+        .FirstOrDefaultAsync();
+
+    var commentsCount = await db.Comments
+        .Where(x => x.AuthorId == user.Id)
+        .CountAsync();
+
+    return new { user , commentsCount };
 });
 
 app.Run();
