@@ -29,57 +29,7 @@ namespace MyBoards.Entities
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
-
-
-
-
-           modelBuilder.Entity<Epic>()
-                .Property(wi => wi.EndDate)
-                .HasPrecision(3);
-
-            modelBuilder.Entity<Task>()
-                .Property(wi => wi.Activity)
-                .HasMaxLength(200);
-
-            modelBuilder.Entity<Task>()
-                .Property(wi => wi.RemaningWork)
-                .HasPrecision(14, 2);
-
-            modelBuilder.Entity<Issue>()
-                .Property(wi => wi.Efford)
-                .HasColumnType("decimal(5,2)");
-
-            modelBuilder.Entity<Comment>(eb =>
-            {
-                eb.Property(x => x.CreatedDate).HasDefaultValueSql("getutcdate()");
-                eb.Property(x => x.UpdatedDate).ValueGeneratedOnUpdate();
-                eb.HasOne(c => c.Author)
-                    .WithMany(a => a.Comments)
-                    .HasForeignKey(c => c.AuthorId)
-                    .OnDelete(DeleteBehavior.ClientCascade);
-            });
-
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.Address)
-                .WithOne(a => a.User)
-                .HasForeignKey<Address>(a => a.UserId);
-
-            modelBuilder.Entity<Tag>()
-                .HasData(new Tag() { Id = 1, Value = "Web" },
-                new Tag() { Id = 2, Value = "UI" },
-                new Tag() { Id = 3, Value = "Desktop" },
-                new Tag() { Id = 4, Value = "API" },
-                new Tag() { Id = 5, Value = "Service" });
-
-
-            modelBuilder.Entity<TopAuthor>(eb =>
-            {
-                eb.ToView("View_TopAuthors");
-                eb.HasNoKey();
-            });
-
-                            
+            modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);                            
         }
     }
 }
