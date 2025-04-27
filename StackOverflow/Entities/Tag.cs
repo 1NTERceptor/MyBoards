@@ -1,0 +1,9 @@
+﻿namespace StackOverflow.Entities
+{
+    public class Tag
+    {
+        public Guid Id { get; set; }
+        public string Title { get; set; }
+        public List<Question> Questions { get; set; } = new List<Question>();
+    }
+}
